@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck, PlusCircle, Sparkles, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useBookings } from '../context/BookingContext';
+import { useGigs } from '../context/GigContext';
 import { MOCK_CATEGORIES } from '../services/mockData';
 import { SearchBar } from '../components/gig/SearchBar';
 import { CategoryCard } from '../components/gig/CategoryCard';
@@ -13,7 +13,7 @@ import { ParsedQuery } from '../services/naturalLanguageSearch';
 
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
-  const { gigs } = useBookings();
+  const { gigs } = useGigs();
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,15 +31,9 @@ export const HomePage: React.FC = () => {
 
   const filteredGigs = useMemo(() => {
     return gigs.filter((gig) => {
-      // Category filter
       if (selectedCategory && gig.categoryId !== selectedCategory) {
         return false;
       }
-      // AI parsed category override if present
-      if (parsedIntent?.detectedCategory && !gig.categoryName.toLowerCase().includes(parsedIntent.detectedCategory.toLowerCase())) {
-        // Soft match allowed
-      }
-      // Text query match
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchesTitle = gig.title.toLowerCase().includes(q);
@@ -47,13 +41,9 @@ export const HomePage: React.FC = () => {
         const matchesDesc = gig.description.toLowerCase().includes(q);
         if (!matchesTitle && !matchesCat && !matchesDesc) return false;
       }
-      // Distance filter
       if (gig.distanceKm > filters.maxDistanceKm) return false;
-      // Price filter
       if (gig.price > filters.maxPrice) return false;
-      // Rating filter
       if (gig.rating < filters.minRating) return false;
-      // Verified only
       if (filters.verifiedOnly && !gig.isVerified) return false;
 
       return true;
@@ -63,11 +53,10 @@ export const HomePage: React.FC = () => {
       if (filters.sortBy === 'highestRated') return b.rating - a.rating;
       return 0;
     });
-  }, [gigs, selectedCategory, searchQuery, filters, parsedIntent]);
+  }, [gigs, selectedCategory, searchQuery, filters]);
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
-      {/* Hello Greeting Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-civic-text-primary tracking-tight">
@@ -85,7 +74,6 @@ export const HomePage: React.FC = () => {
         </Link>
       </div>
 
-      {/* Free-text & Natural Language Search Bar */}
       <SearchBar
         value={searchQuery}
         onChange={setSearchQuery}
@@ -93,7 +81,6 @@ export const HomePage: React.FC = () => {
         onParsedQueryChange={setParsedIntent}
       />
 
-      {/* Restrained Civic Promotional Banner */}
       <div className="relative overflow-hidden rounded-card bg-gradient-to-r from-civic-blue to-civic-blue-dark text-white p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="relative z-10 max-w-lg">
           <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/15 backdrop-blur-xs mb-2">
@@ -114,7 +101,6 @@ export const HomePage: React.FC = () => {
         </Link>
       </div>
 
-      {/* Popular Categories Near You */}
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-bold text-civic-text-primary">
@@ -143,7 +129,6 @@ export const HomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Recommended Gigs Feed */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-civic-text-primary flex items-center gap-1.5">
@@ -187,7 +172,6 @@ export const HomePage: React.FC = () => {
         )}
       </div>
 
-      {/* Filter Modal */}
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}

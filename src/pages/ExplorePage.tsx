@@ -3,11 +3,11 @@ import { SearchBar } from '../components/gig/SearchBar';
 import { CategoryCard } from '../components/gig/CategoryCard';
 import { GigCard } from '../components/gig/GigCard';
 import { MOCK_CATEGORIES } from '../services/mockData';
-import { useBookings } from '../context/BookingContext';
+import { useGigs } from '../context/GigContext';
 import { FilterModal, FilterOptions } from '../components/gig/FilterModal';
 
 export const ExplorePage: React.FC = () => {
-  const { gigs } = useBookings();
+  const { gigs } = useGigs();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<string>('All');
@@ -65,7 +65,6 @@ export const ExplorePage: React.FC = () => {
         onFilterClick={() => setIsFilterOpen(true)}
       />
 
-      {/* Category Group Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
         {categoryGroups.map((group) => (
           <button
@@ -85,7 +84,6 @@ export const ExplorePage: React.FC = () => {
         ))}
       </div>
 
-      {/* Category Grid */}
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
         {displayedCategories.map((cat) => (
           <CategoryCard
@@ -97,7 +95,6 @@ export const ExplorePage: React.FC = () => {
         ))}
       </div>
 
-      {/* Results Grid */}
       <div>
         <h2 className="text-base font-bold text-civic-text-primary mb-3">
           Available Services ({filteredGigs.length})

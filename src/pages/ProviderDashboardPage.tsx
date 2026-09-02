@@ -3,25 +3,25 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Wallet, Calendar, PlusCircle, TrendingUp, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useBookings } from '../context/BookingContext';
+import { useGigs } from '../context/GigContext';
 import { BookingCard } from '../components/booking/BookingCard';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
 
 export const ProviderDashboardPage: React.FC = () => {
   const { user } = useAuth();
-  const { bookings, gigs } = useBookings();
+  const { bookings } = useBookings();
+  const { gigs } = useGigs();
   const navigate = useNavigate();
 
   const myGigs = gigs.filter((g) => g.providerId === user?.id || g.providerName === user?.name);
   const activeBookings = bookings.filter((b) => b.status === 'Upcoming' || b.status === 'In Progress');
 
-  // Calculate earnings
   const completedBookings = bookings.filter((b) => b.status === 'Completed');
   const totalEarned = completedBookings.reduce((sum, b) => sum + b.providerPayout, 0);
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
-      {/* Top Banner */}
       <div className="bg-gradient-to-r from-civic-teal to-civic-teal-dark text-white rounded-card p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold text-civic-teal-100 uppercase tracking-wider block mb-1">
@@ -43,7 +43,6 @@ export const ProviderDashboardPage: React.FC = () => {
         </Button>
       </div>
 
-      {/* Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-4 rounded-card bg-white border border-gray-200 shadow-card flex flex-col justify-between">
           <div className="flex items-center justify-between text-civic-text-secondary text-xs font-semibold">
@@ -92,7 +91,6 @@ export const ProviderDashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Active Jobs Section */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-civic-text-primary flex items-center gap-2">
@@ -116,7 +114,6 @@ export const ProviderDashboardPage: React.FC = () => {
         )}
       </div>
 
-      {/* My Offered Services */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-civic-text-primary">

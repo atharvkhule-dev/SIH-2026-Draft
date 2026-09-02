@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShieldCheck, Heart, Star, Settings, LogOut, Repeat } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useAppMode } from '../context/AppModeContext';
-import { useBookings } from '../context/BookingContext';
+import { useGigs } from '../context/GigContext';
+import { useSaved } from '../context/SavedContext';
 import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
 import { GigCard } from '../components/gig/GigCard';
@@ -11,14 +12,14 @@ import { GigCard } from '../components/gig/GigCard';
 export const ProfilePage: React.FC = () => {
   const { user, logout } = useAuth();
   const { mode, toggleMode } = useAppMode();
-  const { gigs, savedGigIds } = useBookings();
+  const { gigs } = useGigs();
+  const { savedGigIds } = useSaved();
   const navigate = useNavigate();
 
   const savedGigs = gigs.filter((g) => savedGigIds.includes(g.id));
 
   return (
     <div className="max-w-4xl mx-auto flex flex-col gap-6 animate-fade-in">
-      {/* Header Profile Card */}
       <div className="p-6 bg-white rounded-card border border-gray-200 shadow-card flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6">
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
           <img
@@ -66,7 +67,6 @@ export const ProfilePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Saved Services Section */}
       <div>
         <h2 className="text-lg font-bold text-civic-text-primary mb-3 flex items-center gap-2">
           <Heart className="w-5 h-5 text-red-500 fill-red-500" /> Saved Services ({savedGigs.length})
@@ -84,7 +84,6 @@ export const ProfilePage: React.FC = () => {
         )}
       </div>
 
-      {/* Logout */}
       <div className="pt-4 border-t border-gray-200">
         <Button
           variant="danger"

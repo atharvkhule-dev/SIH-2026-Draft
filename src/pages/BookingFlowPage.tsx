@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Calendar, Clock, MapPin, ShieldCheck, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { useGigs } from '../context/GigContext';
 import { useBookings } from '../context/BookingContext';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
@@ -11,7 +12,8 @@ import { Input } from '../components/common/Input';
 export const BookingFlowPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { gigs, createBooking } = useBookings();
+  const { gigs } = useGigs();
+  const { createBooking } = useBookings();
   const { user } = useAuth();
   const { addNotification } = useNotifications();
 
@@ -26,29 +28,25 @@ export const BookingFlowPage: React.FC = () => {
   const datesList = ['Today', 'Tomorrow', 'Day After Tomorrow', 'Saturday', 'Sunday'];
   const slotsList = ['09:00 AM', '10:30 AM', '02:00 PM', '04:30 PM', '06:00 PM'];
 
-  // Fee calculation (5% platform, 5% coop fund, 90% provider)
   const platformFee = Math.round(gig.price * 0.05);
   const cooperativeFee = Math.round(gig.price * 0.05);
   const providerPayout = gig.price - platformFee - cooperativeFee;
 
-  const handleConfirmPayment = () => {
+  const handleConfirmPayment = async () => {
     setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      const booking = createBooking(gig, date, timeSlot, address);
-      addNotification(
-        'Booking Confirmed & Payment Held',
-        `Your payment of ₹${gig.price} is safely held in escrow. Booking ID #${booking.id}.`,
-        'booking',
-        '/bookings'
-      );
-      setStep('confirmed');
-    }, 1200);
+    const booking = await createBooking(gig, date, timeSlot, address);
+    setIsProcessing(false);
+    addNotification(
+      'Booking Confirmed & Payment Held',
+      `Your payment of ₹${gig.price} is safely held in escrow. Booking ID #${booking.id}.`,
+      'booking',
+      '/bookings'
+    );
+    setStep('confirmed');
   };
 
   return (
     <div className="max-w-xl mx-auto flex flex-col gap-6 animate-fade-in">
-      {/* Top Header */}
       <div className="flex items-center gap-2">
         <button
           onClick={() => navigate(-1)}
@@ -89,10 +87,8 @@ export const BookingFlowPage: React.FC = () => {
         </div>
       )}
 
-      {/* Step 1: Details */}
       {step === 'details' && (
         <div className="flex flex-col gap-5 bg-white p-6 rounded-card border border-gray-200 shadow-card">
-          {/* Date Picker */}
           <div>
             <label className="block text-sm font-bold text-civic-text-primary mb-2 flex items-center gap-1.5">
               <Calendar className="w-4 h-4 text-civic-blue" /> Select Date
@@ -115,7 +111,6 @@ export const BookingFlowPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Time Slot Picker */}
           <div>
             <label className="block text-sm font-bold text-civic-text-primary mb-2 flex items-center gap-1.5">
               <Clock className="w-4 h-4 text-civic-blue" /> Select Time Slot
@@ -138,7 +133,6 @@ export const BookingFlowPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Address */}
           <Input
             label="Service Address / Location"
             value={address}
@@ -152,7 +146,6 @@ export const BookingFlowPage: React.FC = () => {
         </div>
       )}
 
-      {/* Step 2: Payment Review */}
       {step === 'payment' && (
         <div className="flex flex-col gap-5 bg-white p-6 rounded-card border border-gray-200 shadow-card">
           <h3 className="text-base font-bold text-civic-text-primary pb-2 border-b border-gray-100">
@@ -170,7 +163,6 @@ export const BookingFlowPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Transparent Cooperative Split Breakdown */}
           <div className="p-4 rounded-card bg-civic-blue-50 border border-civic-blue-100 flex flex-col gap-2 text-xs">
             <div className="text-sm font-bold text-civic-blue mb-1">
               Transparent Price & Cooperative Split
@@ -193,7 +185,6 @@ export const BookingFlowPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Escrow badge */}
           <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 font-medium flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
             <span>Escrow Protection: Payment of ₹{gig.price} will be held safely until you confirm QR completion.</span>
@@ -216,7 +207,6 @@ export const BookingFlowPage: React.FC = () => {
         </div>
       )}
 
-      {/* Step 3: Confirmed */}
       {step === 'confirmed' && (
         <div className="flex flex-col items-center text-center p-8 bg-white rounded-card border border-gray-200 shadow-modal gap-4 animate-scale-up">
           <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">

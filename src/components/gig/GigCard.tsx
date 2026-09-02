@@ -5,14 +5,14 @@ import { Gig } from '../../types';
 import { Rating } from '../common/Rating';
 import { Badge } from '../common/Badge';
 import { PriceDisplay } from '../common/PriceDisplay';
-import { useBookings } from '../../context/BookingContext';
+import { useSaved } from '../../context/SavedContext';
 
 interface GigCardProps {
   gig: Gig;
 }
 
 export const GigCard: React.FC<GigCardProps> = ({ gig }) => {
-  const { isGigSaved, toggleSaveGig } = useBookings();
+  const { isGigSaved, toggleSaveGig } = useSaved();
   const saved = isGigSaved(gig.id);
 
   return (
@@ -46,14 +46,12 @@ export const GigCard: React.FC<GigCardProps> = ({ gig }) => {
 
         {/* Card Body */}
         <div className="p-4 flex flex-col gap-2">
-          {/* Title */}
           <Link to={`/gig/${gig.id}`}>
             <h3 className="font-semibold text-base text-civic-text-primary group-hover:text-civic-blue transition-colors line-clamp-2 leading-snug">
               {gig.title}
             </h3>
           </Link>
 
-          {/* Rating & Distance */}
           <div className="flex items-center justify-between text-xs text-civic-text-secondary">
             <Rating value={gig.rating} count={gig.reviewCount} size="sm" />
             <div className="flex items-center gap-1 font-medium text-gray-600">
@@ -62,7 +60,6 @@ export const GigCard: React.FC<GigCardProps> = ({ gig }) => {
             </div>
           </div>
 
-          {/* Provider snippet */}
           <div className="flex items-center gap-2 pt-1 border-t border-gray-100 mt-1">
             <img
               src={gig.providerAvatar}
@@ -77,7 +74,6 @@ export const GigCard: React.FC<GigCardProps> = ({ gig }) => {
         </div>
       </div>
 
-      {/* Footer / Price & Action */}
       <div className="px-4 pb-4 pt-2 flex items-center justify-between border-t border-gray-50 bg-gray-50/50">
         <div className="flex flex-col">
           <PriceDisplay amount={gig.price} size="sm" />

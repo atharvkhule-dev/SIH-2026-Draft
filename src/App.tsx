@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { AppModeProvider } from './context/AppModeContext';
+import { GigProvider } from './context/GigContext';
+import { SavedProvider } from './context/SavedContext';
 import { BookingProvider } from './context/BookingContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { MainLayout } from './components/layout/MainLayout';
@@ -27,36 +29,40 @@ export const App: React.FC = () => {
   return (
     <AuthProvider>
       <AppModeProvider>
-        <BookingProvider>
-          <NotificationProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<SplashPage />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/onboarding" element={<OnboardingPage />} />
+        <GigProvider>
+          <SavedProvider>
+            <BookingProvider>
+              <NotificationProvider>
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<SplashPage />} />
+                    <Route path="/auth" element={<AuthPage />} />
+                    <Route path="/onboarding" element={<OnboardingPage />} />
 
-                {/* Main Application Layout Routes */}
-                <Route element={<MainLayout />}>
-                  <Route path="/home" element={<HomePage />} />
-                  <Route path="/explore" element={<ExplorePage />} />
-                  <Route path="/gig/:id" element={<GigDetailPage />} />
-                  <Route path="/book/:id" element={<BookingFlowPage />} />
-                  <Route path="/bookings" element={<BookingsPage />} />
-                  <Route path="/messages" element={<MessagesPage />} />
-                  <Route path="/notifications" element={<NotificationsPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
-                  <Route path="/settings" element={<SettingsPage />} />
-                  <Route path="/admin" element={<AdminDashboardPage />} />
-                  <Route path="/provider/dashboard" element={<ProviderDashboardPage />} />
-                  <Route path="/provider/create-service" element={<CreateGigPage />} />
-                  <Route path="/earnings" element={<EarningsPage />} />
-                </Route>
+                    {/* Main Application Layout Routes */}
+                    <Route element={<MainLayout />}>
+                      <Route path="/home" element={<HomePage />} />
+                      <Route path="/explore" element={<ExplorePage />} />
+                      <Route path="/gig/:id" element={<GigDetailPage />} />
+                      <Route path="/book/:id" element={<BookingFlowPage />} />
+                      <Route path="/bookings" element={<BookingsPage />} />
+                      <Route path="/messages" element={<MessagesPage />} />
+                      <Route path="/notifications" element={<NotificationsPage />} />
+                      <Route path="/profile" element={<ProfilePage />} />
+                      <Route path="/settings" element={<SettingsPage />} />
+                      <Route path="/admin" element={<AdminDashboardPage />} />
+                      <Route path="/provider/dashboard" element={<ProviderDashboardPage />} />
+                      <Route path="/provider/create-service" element={<CreateGigPage />} />
+                      <Route path="/earnings" element={<EarningsPage />} />
+                    </Route>
 
-                <Route path="*" element={<Navigate to="/home" replace />} />
-              </Routes>
-            </BrowserRouter>
-          </NotificationProvider>
-        </BookingProvider>
+                    <Route path="*" element={<Navigate to="/home" replace />} />
+                  </Routes>
+                </BrowserRouter>
+              </NotificationProvider>
+            </BookingProvider>
+          </SavedProvider>
+        </GigProvider>
       </AppModeProvider>
     </AuthProvider>
   );

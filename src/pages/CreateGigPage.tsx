@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ArrowLeft, Check, Plus, Trash2 } from 'lucide-react';
+import { Sparkles, ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { MOCK_CATEGORIES } from '../services/mockData';
-import { useBookings } from '../context/BookingContext';
+import { useGigs } from '../context/GigContext';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 import { FairPriceWidget } from '../components/provider/FairPriceWidget';
@@ -12,7 +12,7 @@ import { Gig } from '../types';
 
 export const CreateGigPage: React.FC = () => {
   const navigate = useNavigate();
-  const { addGig } = useBookings();
+  const { addGig } = useGigs();
   const { user } = useAuth();
   const { addNotification } = useNotifications();
 
@@ -52,7 +52,7 @@ export const CreateGigPage: React.FC = () => {
     );
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     const newGig: Gig = {
       id: `gig-${Date.now()}`,
       title: title.trim() || `${selectedCategoryObj.name} Service by ${user?.name}`,
@@ -77,14 +77,14 @@ export const CreateGigPage: React.FC = () => {
       createdAt: new Date().toISOString().split('T')[0]
     };
 
-    addGig(newGig);
+    const created = await addGig(newGig);
     addNotification(
       'Service Published Live!',
-      `Your service "${newGig.title}" is now active and visible to local customers.`,
+      `Your service "${created.title}" is now active and visible to local customers.`,
       'system',
-      `/gig/${newGig.id}`
+      `/gig/${created.id}`
     );
-    navigate(`/gig/${newGig.id}`);
+    navigate(`/gig/${created.id}`);
   };
 
   const daysOptions = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -105,7 +105,6 @@ export const CreateGigPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Wizard Step 1: Category & Basic Details */}
       {step === 1 && (
         <div className="flex flex-col gap-5 bg-white p-6 rounded-card border border-gray-200 shadow-card">
           <div>
@@ -163,7 +162,6 @@ export const CreateGigPage: React.FC = () => {
         </div>
       )}
 
-      {/* Wizard Step 2: Pricing & FairPrice AI */}
       {step === 2 && (
         <div className="flex flex-col gap-5 bg-white p-6 rounded-card border border-gray-200 shadow-card">
           <h3 className="text-base font-bold text-civic-text-primary pb-2 border-b border-gray-100">
@@ -187,7 +185,6 @@ export const CreateGigPage: React.FC = () => {
             </select>
           </div>
 
-          {/* FairPrice AI Recommendation Widget */}
           <FairPriceWidget
             categoryName={selectedCategoryObj.name}
             durationMinutes={durationMinutes}
@@ -216,7 +213,6 @@ export const CreateGigPage: React.FC = () => {
         </div>
       )}
 
-      {/* Wizard Step 3: What's Included & Schedule */}
       {step === 3 && (
         <div className="flex flex-col gap-5 bg-white p-6 rounded-card border border-gray-200 shadow-card">
           <h3 className="text-base font-bold text-civic-text-primary pb-2 border-b border-gray-100">
@@ -235,7 +231,7 @@ export const CreateGigPage: React.FC = () => {
                 placeholder="e.g. High-pressure foam wash included"
                 className="flex-1 min-h-[44px] px-3.5 text-sm rounded-input border border-gray-300"
               />
-              <Button variant="secondary" icon={Plus} onClick={handleAddIncluded}>
+              <Button variant="secondary" onClick={handleAddIncluded}>
                 Add
               </Button>
             </div>
@@ -301,7 +297,6 @@ export const CreateGigPage: React.FC = () => {
         </div>
       )}
 
-      {/* Wizard Step 4: Final Review */}
       {step === 4 && (
         <div className="flex flex-col gap-5 bg-white p-6 rounded-card border border-gray-200 shadow-card">
           <h3 className="text-lg font-extrabold text-civic-text-primary">

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { MapPin, Clock, ShieldCheck, Heart, MessageSquare, Check, ArrowLeft, Calendar, Share2, AlertCircle } from 'lucide-react';
-import { useBookings } from '../context/BookingContext';
+import { useGigs } from '../context/GigContext';
+import { useSaved } from '../context/SavedContext';
 import { Rating } from '../components/common/Rating';
 import { Badge } from '../components/common/Badge';
 import { PriceDisplay } from '../components/common/PriceDisplay';
@@ -11,13 +12,13 @@ import { MOCK_PROVIDERS } from '../services/mockData';
 export const GigDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { gigs, isGigSaved, toggleSaveGig } = useBookings();
+  const { gigs } = useGigs();
+  const { isGigSaved, toggleSaveGig } = useSaved();
 
   const gig = gigs.find((g) => g.id === id) || gigs[0];
   const saved = isGigSaved(gig.id);
   const [selectedImg, setSelectedImg] = useState(gig.images[0]);
 
-  // Find provider details if matching
   const provider = MOCK_PROVIDERS.find((p) => p.id === gig.providerId) || {
     id: gig.providerId,
     name: gig.providerName,
@@ -38,7 +39,6 @@ export const GigDetailPage: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-6 max-w-4xl mx-auto animate-fade-in">
-      {/* Back button & title */}
       <div className="flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
@@ -68,9 +68,7 @@ export const GigDetailPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left Column: Gallery & Details (2 cols) */}
         <div className="md:col-span-2 flex flex-col gap-6">
-          {/* Main Image View */}
           <div className="rounded-card overflow-hidden bg-gray-100 border border-gray-200 aspect-16/9 shadow-sm">
             <img
               src={selectedImg || gig.images[0]}
@@ -79,7 +77,6 @@ export const GigDetailPage: React.FC = () => {
             />
           </div>
 
-          {/* Thumbnail row */}
           {gig.images.length > 1 && (
             <div className="flex gap-2">
               {gig.images.map((img, idx) => (
@@ -96,7 +93,6 @@ export const GigDetailPage: React.FC = () => {
             </div>
           )}
 
-          {/* Title & Metadata */}
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="px-2.5 py-1 text-xs font-bold rounded-md bg-civic-blue-50 text-civic-blue">
@@ -120,7 +116,6 @@ export const GigDetailPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Description */}
           <div className="p-5 rounded-card bg-white border border-gray-200 shadow-card">
             <h3 className="text-base font-bold text-civic-text-primary mb-2">
               Service Description
@@ -130,7 +125,6 @@ export const GigDetailPage: React.FC = () => {
             </p>
           </div>
 
-          {/* What's Included */}
           <div className="p-5 rounded-card bg-white border border-gray-200 shadow-card">
             <h3 className="text-base font-bold text-civic-text-primary mb-3">
               What's Included
@@ -147,7 +141,6 @@ export const GigDetailPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Provider Card */}
           <div className="p-5 rounded-card bg-white border border-gray-200 shadow-card flex flex-col gap-4">
             <h3 className="text-base font-bold text-civic-text-primary">
               About the Provider
@@ -184,7 +177,6 @@ export const GigDetailPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column: Sticky Booking Card */}
         <div className="md:col-span-1">
           <div className="sticky top-20 bg-white rounded-card border border-gray-200 shadow-md p-5 flex flex-col gap-4">
             <div>
@@ -208,7 +200,6 @@ export const GigDetailPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Primary Action Button */}
             <Button
               variant="primary"
               size="lg"
